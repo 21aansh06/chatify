@@ -2,12 +2,14 @@ import nodemailer from "nodemailer"
 
 
 const transporter = nodemailer.createTransport({
-    service:"gmail",
-    auth:{
-        user:process.env.EMAIL_USER,
-        pass:process.env.EMAIL_PASS
-    }
-})
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 transporter.verify((error,success)=>{
     if(error){
@@ -44,9 +46,9 @@ export const sendOtpToEmail = async (email,otp) => {
     </div>
   `;
   await transporter.sendMail({
-    from:`RealTime Chat App: ${process.env.EMAIL_USER}`,
+    from:`Chatify: ${process.env.EMAIL_USER}`,
     to:email,
-    subject:"Your verfifiaction code for ReaTime chat App",
+    subject:"Your verfifiaction code for Chatify",
     html
   })
 }

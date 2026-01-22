@@ -36,8 +36,6 @@ app.use(
     credentials: false, 
   })
 );
-app.options("*", cors())
-
 
 const server = createServer(app)
 const io = initializeSocket(server)
