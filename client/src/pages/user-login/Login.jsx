@@ -81,36 +81,40 @@ const Login = () => {
   } = useForm({
     resolver: yupResolver(profileValidationSchema)
   })
+const onLoginSubmit = async (data) => {
+  try {
+    setLoading(true)
 
-  const onLoginSubmit = async () => {
-    try {
-      setLoading(true)
-      if (email) {
-        const response = await sendOtp(null, null, email)
-        if (response?.success) {
-          toast.success(response.message)
-          setUserPhoneData({ email })
-          setStep(2)
-        } else {
-          toast.error(response?.message)
-        }
+    const { email, phoneNumber } = data
+
+    if (email) {
+      const response = await sendOtp(null, null, email)
+
+      if (response?.success) {
+        toast.success(response.message)
+        setUserPhoneData({ email })
+        setStep(2)
       } else {
-        const response = await sendOtp(phoneNumber, country.dialCode)
-        if (response?.success) {
-          toast.success(response.message)
-          setUserPhoneData({ phoneNumber, phoneSuffix: country.dialCode })
-          setStep(2)
-        } else {
-          toast.error(response?.message)
-        }
+        toast.error(response?.message)
       }
-    } catch (error) {
-      toast.error(error.message)
-      setError(error.message || "Something went wrong")
-    } finally {
-      setLoading(false)
+    } else {
+      const response = await sendOtp(phoneNumber, country.dialCode)
+
+      if (response?.success) {
+        toast.success(response.message)
+        setUserPhoneData({ phoneNumber, phoneSuffix: country.dialCode })
+        setStep(2)
+      } else {
+        toast.error(response?.message)
+      }
     }
+  } catch (error) {
+    toast.error(error.message || "Something went wrong")
+  } finally {
+    setLoading(false)
   }
+}
+
   const onOtpSubmit = async () => {
     try {
       setLoading(true);
