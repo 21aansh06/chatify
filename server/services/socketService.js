@@ -9,14 +9,20 @@ const onlineUsers = new Map()
 const typingUsers = new Map()
 
 export const initializeSocket = (server) => {
-    const io = new Server(server, {
-        cors: {
-            origin: process.env.FRONTEND_URL,
-            credentials: true,
-            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-        },
-        pingTimeout: 60 * 1000
-    })
+  const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
+  const io = new Server(server, {
+    cors: {
+      origin: allowedOrigins,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      credentials: false,
+      allowedHeaders: ["Authorization"],
+    },
+    pingTimeout: 60 * 1000,
+  });
     io.use(socketMiddleware)
 
     io.on("connection", (socket) => {
