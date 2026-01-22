@@ -37,12 +37,3 @@ app.get("/", (req,res)=>{
 server.listen(port , ()=>{
     console.log(`Server started on PORT: ${port}` )
 })
-
-  
-
-//for TS
-// "scripts": {
-//     "start": "node dist/index.js",
-//     "build":"tsc",
-//     "dev": "nodemon ts-node index.ts"
-//   },
