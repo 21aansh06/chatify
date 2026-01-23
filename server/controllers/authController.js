@@ -15,8 +15,6 @@ export const sendOtp = async (req, res) => {
 
   try {
     let user
-
-    // ✅ EMAIL LOGIN / SIGNUP
     if (email) {
       user = await User.findOne({ email })
 
@@ -36,7 +34,6 @@ export const sendOtp = async (req, res) => {
       })
     }
 
-    // ✅ PHONE LOGIN / SIGNUP
     if (!phoneNumber || !phoneSuffix) {
       return res.json({
         success: false,
@@ -50,6 +47,7 @@ export const sendOtp = async (req, res) => {
 
     if (!user) {
       user = new User({ phoneNumber, phoneSuffix })
+      user.email = undefined
     }
 
     user.phoneOtp = otp
