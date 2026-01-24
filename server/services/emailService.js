@@ -1,27 +1,18 @@
-import nodemailer from "nodemailer"
+import sgMail from "@sendgrid/mail"
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("Email config error:", error);
-  } else {
-    console.log("Gmail configured successfully");
-  }
-});
-
-
-export const sendOtpToEmail = async (email,otp) => {
-      const html = `
-    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+export const sendOtpToEmail = async (email, otp) => {
+  try {
+    const msg = {
+      to: email,
+      from: {
+        email: process.env.SENDGRID_FROM_EMAIL,
+        name: "Chatify Security"
+      },
+      subject: "Your verification code for Chatify",
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
       <h2 style="color: #075e54;">🔐 Chatify Web Verification</h2>
       
       <p>Hi there,</p>
@@ -42,16 +33,13 @@ export const sendOtpToEmail = async (email,otp) => {
 
       <small style="color: #777;">This is an automated message. Please do not reply.</small>
     </div>
-  `;
-   try {
-    await transporter.sendMail({
-      from: `"Chatify" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: "Your verification code for Chatify",
-      html
-    });
+      `
+    }
+
+    await sgMail.send(msg)
+
   } catch (error) {
-    console.error("Failed to send email:", error);
-    throw error;
+    console.error("SendGrid error:", error.response?.body || error.message)
+    throw new Error("Email delivery failed")
   }
 }

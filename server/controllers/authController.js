@@ -1,6 +1,6 @@
 import { updloadFileToCloudinary } from "../config/cloudinary.js"
 import User from "../models/User.js"
-import { sendOtpToEmail } from "../services/emailService.js"
+import {sendOtpToEmail} from "../services/emailService.js"
 import { sendOtpToPhn, verifyOtpPhn } from "../services/twilioService.js"
 import { generateToken } from "../utils/generateToken.js"
 import generateOTP from "../utils/otpGenerator.js"
