@@ -13,6 +13,7 @@ import { FaArrowLeft, FaChevronDown, FaPlus, FaUser, FaWhatsapp } from "react-ic
 import Spinner from '../../utils/Spinner'
 import { sendOtp, updateUserProfile, verifyOtp } from '../../services/user'
 import { toast } from 'react-toastify'
+import { LuMessageCircleCode } from "react-icons/lu";
 
 const loginValidationSchema = yup
   .object()
@@ -235,7 +236,7 @@ const onLoginSubmit = async (data) => {
           transition={{ duration: 0.2, type: "spring", stiffness: 260, damping: 20 }}
           className="w-24 h-24 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center"
         >
-          <FaWhatsapp className="w-16 h-16 text-white" />
+          <LuMessageCircleCode className="w-16 h-16 text-white" />
         </motion.div>
 
         <h1 className={`text-3xl font-bold text-center mb-6 ${theme === "dark" ? "text-white" : "text-gray-800"}`}>

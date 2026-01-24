@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import themeStore from '../store/themeStore'
 import userStore from '../store/userStore'
 import layoutStore from '../store/layoutStore'
-import { FaWhatsapp } from 'react-icons/fa6'
+import { LuMessageCircleCode } from "react-icons/lu";
 import { FaCog, FaUserCircle } from "react-icons/fa";
 import { motion } from 'framer-motion'
 import { MdRadioButtonChecked } from "react-icons/md";
@@ -43,7 +43,7 @@ const SideBar = () => {
     const SidebarContent = (
         <>
             <Link to="/" className={`${isMobile ? "" : "mb-8"} ${activeTab === "chats" && "bg-gray-300 shadow-sm p-2 rounded-full"} focus:outline-none`}>
-                <FaWhatsapp
+                <LuMessageCircleCode
                     className={`h-6 w-6 ${activeTab === "chats" ? theme === "dark" ? "text-gray-800" : "" : theme === "dark" ? "text-gray-300" : "text-gray-800"}`} />
             </Link>
 
