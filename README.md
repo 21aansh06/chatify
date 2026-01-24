@@ -31,7 +31,7 @@ Chatify is a production-ready real-time chat application built using the MERN st
 
 | Layer | Technologies |
 | :--- | :--- |
-| **Frontend** | React.js, Tailwind CSS, Socket.IO Client, Yup |
+| **Frontend** | React.js, Zustand, Tailwind CSS, Socket.IO Client, Yup |
 | **Backend** | Node.js, Express.js, Socket.IO, Redis, JWT, Cloudinary (Media Storage) |
 | **Database** | MongoDB + Mongoose |
 | **Services** | Twilio (Phone), SendGrid (Email), Upstash (Cloud Redis) |
