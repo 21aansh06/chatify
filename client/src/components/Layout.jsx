@@ -19,76 +19,116 @@ const Layout = ({ children, isThemeDialogOpen, toggleThemeDialog, isStatusPrevie
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [])
+
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-[#111b21] text-white" : "bg-gray-100 text-black"} flex relative`}>
+    <div
+      className={`min-h-screen flex relative
+        ${theme === "dark"
+          ? "bg-[#0B141A] text-gray-100"
+          : "bg-gray-100 text-gray-900"
+        }`}
+    >
       {!isMobile && <SideBar />}
-      <div className={`flex-1 flex overflow-hidden ${isMobile ? "flex-col" : ""}`}>
+
+      <div className={`flex-1 flex overflow-hidden relative ${isMobile ? "flex-col" : ""}`}>
         <AnimatePresence initial={false}>
           {(!selectedContact || !isMobile) && (
-            <motion.div key="chatlist"
+            <motion.div
+              key="chatlist"
               initial={{ x: isMobile ? "-100%" : 0 }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "tween" }}
-              className={`w-full md:w-2/5 h-full ${isMobile ? "pb-16" : ""}`}
+              className={`w-full md:w-2/5 h-full overflow-hidden ${isMobile ? "pb-16" : ""}
+                ${theme === "dark" ? "bg-[#111B21]" : "bg-gray-50"}`}
             >
               {children}
             </motion.div>
           )}
+
           {(selectedContact || !isMobile) && (
-            <motion.div key="chatWindow"
+            <motion.div
+              key="chatWindow"
               initial={{ x: isMobile ? "-100%" : 0 }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "tween" }}
-              className="w-full h-full"
+              className={`w-full h-full overflow-hidden
+                ${theme === "dark" ? "bg-[#0B141A]" : "bg-white"}`}
             >
-              <ChatWindow selectedContact={selectedContact} setSelectedContact={setSelectedContact} isMobile={isMobile} />
+              <ChatWindow
+                selectedContact={selectedContact}
+                setSelectedContact={setSelectedContact}
+                isMobile={isMobile}
+              />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
       {isMobile && <SideBar />}
+
+      {/* THEME DIALOG */}
       {isThemeDialogOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
           <div
-            className={`${theme === "dark" ? "bg-[#202c33] text-white" : "bg-white text-black"
-              } p-6 rounded-lg shadow-lg max-w-sm w-full`}
+            className={`w-full max-w-sm rounded-xl p-6 shadow-2xl
+              ${theme === "dark"
+                ? "bg-zinc-900 text-gray-100 border border-zinc-800"
+                : "bg-gray-50 text-gray-900 border border-gray-200"
+              }`}
           >
-            <h2 className="text-2xl font-semibold mb-4">Choose a theme</h2>
-            <div className="space-y-4">
-              <label className="flex items-center space-x-3 cursor-pointer">
+            <h2 className="text-xl font-semibold mb-5">
+              Appearance
+            </h2>
+
+            <div className="space-y-3">
+              <label
+                className={`flex items-center justify-between p-3 rounded-lg cursor-pointer
+                  ${theme === "light"
+                    ? "bg-gray-200"
+                    : "hover:bg-zinc-800"
+                  }`}
+              >
+                <span>Light</span>
                 <input
                   type="radio"
-                  value="light"
                   checked={theme === "light"}
                   onChange={() => setTheme("light")}
-                  className="form-radio text-blue-600"
+                  className="accent-indigo-600"
                 />
-                <span>Light</span>
               </label>
-              <label className="flex items-center space-x-3 cursor-pointer">
+
+              <label
+                className={`flex items-center justify-between p-3 rounded-lg cursor-pointer
+                  ${theme === "dark"
+                    ? "bg-zinc-800"
+                    : "hover:bg-gray-200"
+                  }`}
+              >
+                <span>Dark</span>
                 <input
                   type="radio"
-                  value="dark"
                   checked={theme === "dark"}
                   onChange={() => setTheme("dark")}
-                  className="form-radio text-blue-600"
+                  className="accent-indigo-600"
                 />
-                <span>Dark</span>
               </label>
             </div>
+
             <button
               onClick={toggleThemeDialog}
-              className="mt-6 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"
+              className="mt-6 w-full py-2 rounded-lg font-medium
+                bg-indigo-600 text-white hover:bg-indigo-700 transition"
             >
-              Close
+              Done
             </button>
           </div>
         </div>
       )}
+
       {isStatusPreviewOpen && (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
           {statusPreviewContent}
         </div>
       )}

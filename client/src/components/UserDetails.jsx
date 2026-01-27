@@ -11,7 +11,6 @@ import { MdCancel } from 'react-icons/md'
 import EmojiPicker from 'emoji-picker-react'
 
 const UserDetails = () => {
-
     const [name, setName] = useState("")
     const [about, setAbout] = useState("")
     const [profilePic, setProfilePic] = useState(null)
@@ -20,6 +19,7 @@ const UserDetails = () => {
     const [isEditingAbout, setIsEditingAbout] = useState(false)
     const [showNameEmoji, setShowNameEmoji] = useState(false)
     const [showAboutEmoji, setShowAboutEmoji] = useState(false)
+
     const { user, setUser } = userStore()
     const { theme } = themeStore()
 
@@ -41,6 +41,7 @@ const UserDetails = () => {
     const handleSave = async (field) => {
         try {
             const formData = new FormData()
+
             if (field === "name") {
                 formData.append("username", name)
                 setIsEditingName(false)
@@ -67,123 +68,151 @@ const UserDetails = () => {
 
     const handleEmojiSelect = (emoji, field) => {
         if (field === "name") {
-            setName((prev) => prev + emoji.emoji)
+            setName(prev => prev + emoji.emoji)
             setShowNameEmoji(false)
         } else {
-            setAbout((prev) => prev + emoji.emoji)
+            setAbout(prev => prev + emoji.emoji)
             setShowAboutEmoji(false)
         }
     }
 
-
     return (
-        <Layout >
+        <Layout>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className={`w-full min-h-screen flex border-r ${theme === "dark" ? "bg-[rgb(17,27,33)] border-gray-600 text-white" : "bg-gray-100 border-gray-200 text-black"}`}>
-                <div className='w-full rounded-lg p-6'>
-                    <div className='flex items-center mb-6'>
-                        <h1 className='text-2xl font-bold'>Profile</h1>
-                    </div>
-                    <div className='space-y-6'>
-                        <div className='flex flex-col items-center'>
-                            <div className='relative group overflow-hidden'>
-                                <img src={profilePicPreview || user?.profilePic} alt="profile pic" className='w-52 h-52 rounded-full mb-2 object-cover' />
-                                <label htmlFor="profileupload" className='absolute inset-0  bg-black/15 bg-opacity-50 rounded-full flex items-center  justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'>
-                                    <div className='text-white text-center'>
-                                        <FaCamera className='h-8 w-8 mx-auto mb-2' />
-                                        <span className='text-sm'>Change</span>
-                                    </div>
-                                    <input type="file" id='profileupload' accept='image/*' onChange={handleFile} className='hidden' />
+                className={`w-full min-h-screen flex border-r
+                ${theme === "dark"
+                        ? "bg-black border-zinc-800 text-white"
+                        : "bg-white border-gray-200 text-black"
+                    }`}
+            >
+                <div className="w-full rounded-lg p-6">
+                    <h1 className="text-2xl font-bold mb-6">Profile</h1>
+
+                    <div className="space-y-6">
+                        {/* PROFILE IMAGE */}
+                        <div className="flex flex-col items-center">
+                            <div className="relative group">
+                                <img
+                                    src={profilePicPreview || user?.profilePic}
+                                    alt="profile"
+                                    className="w-52 h-52 rounded-full object-cover"
+                                />
+
+                                <label
+                                    htmlFor="profileupload"
+                                    className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                                >
+                                    <FaCamera className="h-8 w-8 text-white" />
+                                    <input
+                                        type="file"
+                                        id="profileupload"
+                                        accept="image/*"
+                                        onChange={handleFile}
+                                        className="hidden"
+                                    />
                                 </label>
                             </div>
                         </div>
+
                         {profilePicPreview && (
-                            <div className='flex justify-center gap-4 mt-4'>
-                                <button onClick={() => { handleSave("profile") }} className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded'>
+                            <div className="flex justify-center gap-4">
+                                <button
+                                    onClick={() => handleSave("profile")}
+                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                                >
                                     Change
                                 </button>
-                                <button onClick={() => { setProfilePic(null); setProfilePicPreview(null) }} className='bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded'>
+                                <button
+                                    onClick={() => {
+                                        setProfilePic(null)
+                                        setProfilePicPreview(null)
+                                    }}
+                                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                >
                                     Discard
                                 </button>
-
                             </div>
                         )}
-                        <div className={`relative p-4 ${theme === "dark" ? "bg-gray-800" : "bg-white"} shadow-sm rounded-lg`}>
-                            <label htmlFor="name" className='block text-sm font-medium mb-1 text-gray-500 text-start'>
+
+                        {/* NAME */}
+                        <div className={`relative p-4 rounded-lg shadow-sm
+                            ${theme === "dark" ? "bg-zinc-900" : "bg-white"}`}>
+                            <label className="block text-sm mb-1 text-gray-500">
                                 Your Name
                             </label>
-                            <div className='flex items-center'>
+
+                            <div className="flex items-center">
                                 {isEditingName ? (
-                                    <input type="text" id='name' value={name} onChange={(e)=>setName(e.target.value)} className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-green-500${theme === "dark" ? "bg-gray-700 text-white" : "bg-white text-black"}`} />
+                                    <input
+                                        value={name}
+                                        onChange={e => setName(e.target.value)}
+                                        className={`w-full px-3 py-2 rounded-md outline-none
+                                        ${theme === "dark"
+                                                ? "bg-zinc-800 border border-zinc-700 text-white focus:ring-1 focus:ring-green-500"
+                                                : "bg-white border text-black"
+                                            }`}
+                                    />
                                 ) : (
-                                    <span className='w-full px-3 py-2'>
-                                        {user?.username || name}
-                                    </span>
+                                    <span className="w-full px-3 py-2">{user?.username}</span>
                                 )}
+
                                 {isEditingName ? (
                                     <>
-                                    <button onClick={()=>handleSave("name")} className='focus:outline-none ml-2'>
-                                        <FaCheck className='h-5 w-5 text-green-500' />
-                                    </button>
-                                    <button onClick={()=>setShowNameEmoji(!showNameEmoji)} className='focus:outline-none ml-2'>
-                                        <FaSmile className='h-5 w-5 text-yellow-500' />
-                                    </button>
-                                    <button onClick={()=>{setIsEditingName(false) ; setShowNameEmoji(false)}} className='focus:outline-none ml-2'>
-                                        <MdCancel className='h-5 w-5 text-gray-500' />
-                                    </button>
+                                        <FaCheck onClick={() => handleSave("name")} className="ml-2 text-green-500 cursor-pointer" />
+                                        <FaSmile onClick={() => setShowNameEmoji(!showNameEmoji)} className="ml-2 text-yellow-400 cursor-pointer" />
+                                        <MdCancel onClick={() => { setIsEditingName(false); setShowNameEmoji(false) }} className="ml-2 text-gray-400 cursor-pointer" />
                                     </>
-
                                 ) : (
-                                    <button onClick={()=>setIsEditingName(!isEditingName)} className='focus:outline-none ml-2'>
-                                        <FaPencil className='h-5 w-5 text-gray-500' />
-                                    </button>
+                                    <FaPencil onClick={() => setIsEditingName(true)} className="ml-2 text-gray-400 cursor-pointer" />
                                 )}
                             </div>
+
                             {showNameEmoji && (
-                                <div className='absolute z-10 -top-80'>
-                                    <EmojiPicker onEmojiClick={(emoji)=> handleEmojiSelect(emoji,"name")}/>
+                                <div className="absolute z-20 -top-80">
+                                    <EmojiPicker onEmojiClick={(e) => handleEmojiSelect(e, "name")} />
                                 </div>
                             )}
                         </div>
 
-                        {/* about */}
-                        <div className={`relative p-4 ${theme === "dark" ? "bg-gray-800" : "bg-white"} shadow-sm rounded-lg`}>
-                            <label htmlFor="name" className='block text-sm font-medium mb-1 text-gray-500 text-start'>
+                        {/* ABOUT */}
+                        <div className={`relative p-4 rounded-lg shadow-sm
+                            ${theme === "dark" ? "bg-zinc-900" : "bg-white"}`}>
+                            <label className="block text-sm mb-1 text-gray-500">
                                 Your About
                             </label>
-                            <div className='flex items-center'>
+
+                            <div className="flex items-center">
                                 {isEditingAbout ? (
-                                    <input type="text" id='about' value={about} onChange={(e)=>setAbout(e.target.value)} className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-green-500${theme === "dark" ? "bg-gray-700 text-white" : "bg-white text-black"}`} />
+                                    <input
+                                        value={about}
+                                        onChange={e => setAbout(e.target.value)}
+                                        className={`w-full px-3 py-2 rounded-md outline-none
+                                        ${theme === "dark"
+                                                ? "bg-zinc-800 border border-zinc-700 text-white focus:ring-1 focus:ring-green-500"
+                                                : "bg-white border text-black"
+                                            }`}
+                                    />
                                 ) : (
-                                    <span className='w-full px-3 py-2'>
-                                        {user?.about || about}
-                                    </span>
+                                    <span className="w-full px-3 py-2">{user?.about}</span>
                                 )}
+
                                 {isEditingAbout ? (
                                     <>
-                                    <button onClick={()=>handleSave("about")} className='focus:outline-none ml-2'>
-                                        <FaCheck className='h-5 w-5 text-green-500' />
-                                    </button>
-                                    <button onClick={()=>setShowAboutEmoji(!showAboutEmoji)} className='focus:outline-none ml-2'>
-                                        <FaSmile className='h-5 w-5 text-yellow-500' />
-                                    </button>
-                                    <button onClick={()=>{setIsEditingAbout(false) ; setShowAboutEmoji(false)}} className='focus:outline-none ml-2'>
-                                        <MdCancel className='h-5 w-5 text-gray-500' />
-                                    </button>
+                                        <FaCheck onClick={() => handleSave("about")} className="ml-2 text-green-500 cursor-pointer" />
+                                        <FaSmile onClick={() => setShowAboutEmoji(!showAboutEmoji)} className="ml-2 text-yellow-400 cursor-pointer" />
+                                        <MdCancel onClick={() => { setIsEditingAbout(false); setShowAboutEmoji(false) }} className="ml-2 text-gray-400 cursor-pointer" />
                                     </>
-
                                 ) : (
-                                    <button onClick={()=>setIsEditingAbout(!isEditingAbout)} className='focus:outline-none ml-2'>
-                                        <FaPencil className='h-5 w-5 text-gray-500' />
-                                    </button>
+                                    <FaPencil onClick={() => setIsEditingAbout(true)} className="ml-2 text-gray-400 cursor-pointer" />
                                 )}
                             </div>
+
                             {showAboutEmoji && (
-                                <div className='absolute z-10 -top-80'>
-                                    <EmojiPicker onEmojiClick={(emoji)=> handleEmojiSelect(emoji,"about")}/>
+                                <div className="absolute z-20 -top-80">
+                                    <EmojiPicker onEmojiClick={(e) => handleEmojiSelect(e, "about")} />
                                 </div>
                             )}
                         </div>

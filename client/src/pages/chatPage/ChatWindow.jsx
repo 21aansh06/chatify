@@ -36,8 +36,6 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
   const { theme } = themeStore()
   const { user } = userStore()
 
-
-
   const {
     messages,
     currentConversation,
@@ -79,9 +77,6 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
     fetchConversations()
   }, [])
 
-  // const scrollToBottom = () => {
-  //   messageEndRef.current?.scrollIntoView({ behavior: "auto" })
-  // }
   const handleScroll = () => {
     if (!chatRef.current || !hasMore || loadingMore) return
 
@@ -111,17 +106,11 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
     }
   }, [messages])
 
-
-
-
   useEffect(() => {
     if (!chatRef.current) return
-    // Only auto-scroll when user is already near the bottom
     if (!isAtBottomRef.current) return
     messageEndRef.current?.scrollIntoView({ behavior: "auto" })
   }, [messages])
-
-
 
   useEffect(() => {
     if (message && selectedContact) {
@@ -206,11 +195,15 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
     } else if (isYesterday(date)) {
       dateString = "Yesterday"
     } else {
-      dateString = format(date, "EEE,MMMM d")
+      dateString = format(date, "EEE, MMMM d")
     }
     return (
-      <div className='flex justify-center my-4'>
-        <span className={`px-4 py-2 rounded-full text-sm ${theme === "dark" ? "bg-gray-700 text-gray-300" : "bg-gray-200 text-gray-600"}`}>
+      <div className='flex justify-center my-6'>
+        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${
+          theme === "dark" 
+          ? "bg-zinc-800/50 text-zinc-400 border-zinc-700" 
+          : "bg-white text-zinc-500 border-zinc-200"
+        }`}>
           {dateString}
         </span>
       </div>
@@ -247,55 +240,61 @@ const groupedMessages = Array.isArray(messages)
 
   if (!selectedContact) {
     return (
-      <div className='flex-1 flex flex-col items-center justify-center mx-auto h-screen text-center'>
-        <div className='max-w-md'>
-          <img src={chatWindow_image} alt="chat-app" className='w-full h-auto' />
-          <h2 className={`text-3xl font-semibold mb-4 ${theme === "dark" ? "text-white" : "text-black"}`}>
-            Select a conversation to start chatting
+      <div className={`flex-1 flex flex-col items-center justify-center mx-auto h-screen text-center transition-colors ${theme === "dark" ? "bg-zinc-950" : "bg-zinc-50"}`}>
+        <div className='max-w-md p-8'>
+          <img src={chatWindow_image} alt="chat-app" className='w-64 h-auto mx-auto mb-8 opacity-80' />
+          <h2 className={`text-3xl font-black tracking-tight mb-4 ${theme === "dark" ? "text-white" : "text-zinc-900"}`}>
+            Pick up where you left off
           </h2>
-          <p className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"} mb-6`}>
-            Choose a contact from the list on the left to begin messaging
+          <p className={`text-sm font-medium leading-relaxed ${theme === "dark" ? "text-zinc-500" : "text-zinc-400"} mb-8`}>
+            Select a contact to view your message history and start a new conversation.
           </p>
-          <p className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"} text-sm mt-8 flex items-center justify-center gap-2`}>
-            <FaLock className='w-4 h-4' />
-            Your personal messages are end-to-end encrypted(not now this feature will come soon)
-          </p>
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl border text-xs font-bold uppercase tracking-wider ${
+            theme === "dark" ? "bg-zinc-900/50 border-zinc-800 text-zinc-500" : "bg-white border-zinc-200 text-zinc-400"
+          }`}>
+            <FaLock className='w-3 h-3' />
+            End-to-End Encrypted(this will come soon.)
+          </div>
         </div>
       </div>
     )
   }
-  //   console.log("CHAT STORE RAW:", {
-  //   messages,
-  //   type: typeof messages,
-  //   isArray: Array.isArray(messages),
-  // })
-  // console.log(messages)
-
-
-
   return (
 
-    <div className='flex-1 h-screen w-full flex flex-col'>
-      <div className={`p-4 ${theme === "dark" ? "bg-[#303430] text-white" : "bg-[rgb(239,242,245)] flex items-center"}`}>
-        <button className='mr-2 focus:outline-none cursor-pointer' onClick={() => setSelectedContact(null)}>
-          <FaArrowLeft className='h-6 w-6' />
+    <div className={`flex-1 h-screen w-full flex flex-col transition-colors ${theme === "dark" ? "bg-zinc-950" : "bg-zinc-100"}`}>
+      {/* Header */}
+      <div className={`p-4 flex items-center border-b transition-all ${
+        theme === "dark" 
+        ? "bg-zinc-900/90 border-zinc-800 backdrop-blur-md text-white" 
+        : "bg-white/90 border-zinc-200 backdrop-blur-md text-zinc-900"
+      }`}>
+        <button className={`mr-4 p-2 rounded-xl cursor-pointer transition-colors ${theme === "dark" ? "hover:bg-zinc-800" : "hover:bg-zinc-100"}`} onClick={() => setSelectedContact(null)}>
+          <FaArrowLeft className='h-5 w-5' />
         </button>
-        <img src={selectedContact?.profilePic} alt={selectedContact?.username} className='w-10 h-10 rounded-full' />
-        <div className='ml-3 flex-grow'>
-          <h2 className='font-semibold text-start'>
+        <div className="relative">
+          <img src={selectedContact?.profilePic} alt={selectedContact?.username} className='w-11 h-11 rounded-2xl object-cover shadow-sm' />
+          {online && <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></div>}
+        </div>
+        <div className='ml-4 flex-grow'>
+          <h2 className='font-bold text-lg tracking-tight'>
             {selectedContact?.username}
           </h2>
           {isTyping ? (
-            <div>Typing...</div>
+            <div className="text-xs font-black text-indigo-500 animate-pulse uppercase tracking-widest">Typing...</div>
           ) : (
-            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
-              {online ? "Online" : lastSeen ? `Last seen ${format(new Date(lastSeen), "HH:mm")}` : "Offline"}
+            <p className={`text-xs font-bold ${theme === "dark" ? "text-zinc-500" : "text-zinc-400"}`}>
+              {online ? "ACTIVE NOW" : lastSeen ? `LAST SEEN ${format(new Date(lastSeen), "HH:mm")}` : "OFFLINE"}
             </p>
           )}
         </div>
-
       </div>
-      <div ref={chatRef} onScroll={handleScroll} className={`flex-1 p-4 overflow-y-auto ${theme === "dark" ? "bg-[#191a1a]" : "bg-[rgb(241,236,229)]"}`}>
+
+      {/* Chat Area */}
+      <div ref={chatRef} onScroll={handleScroll} className={`flex-1 p-6 overflow-y-auto space-y-2 custom-scrollbar ${
+        theme === "dark" 
+        ? "bg-zinc-950 bg-[radial-gradient(#1e1e24_1px,transparent_1px)] [background-size:20px_20px]" 
+        : "bg-zinc-50 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]"
+      }`}>
         {Object.entries(groupedMessages[selectedContact?.conversation?._id] || {})
           .map(([date, msgs]) => (
             <React.Fragment key={`${selectedContact?.conversation?._id}-${date}`}>
@@ -306,7 +305,7 @@ const groupedMessages = Array.isArray(messages)
                 )
                 .map((msg) => (
                   <MessageBubble
-                    key={`${msg.conversation}-${msg._id || msg.tempId}`}
+                   key={msg._id ?? msg.tempId}
                     message={msg}
                     theme={theme}
                     currentUser={user}
@@ -318,69 +317,97 @@ const groupedMessages = Array.isArray(messages)
           ))}
         <div ref={messageEndRef} />
       </div>
-      {filePreview && (
-        <div className='relative p-2'>
-          {selectedFile?.type.startsWith("video/") ? (
-            <video src={filePreview} controls className='w-80 object-cober rounded shadow-lg mx-auto' />
-          ) : (
 
-            <img src={filePreview} alt="" className='w-80 object-cover rounded shadow-lg mx-auto' />
-          )}
-          <button
-            onClick={() => {
-              setSelectedFile(null);
-              setFilePreview(null)
-            }}
-            className='absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1'>
-            <FaTimes className='h-4 w-4' />
-          </button>
+      {/* Preview Section */}
+      {filePreview && (
+        <div className={`p-4 border-t ${theme === "dark" ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"}`}>
+          <div className='relative inline-block'>
+            {selectedFile?.type.startsWith("video/") ? (
+              <video src={filePreview} className='w-48 h-48 object-cover rounded-2xl shadow-2xl border-4 border-indigo-500/20' />
+            ) : (
+              <img src={filePreview} alt="" className='w-48 h-48 object-cover rounded-2xl shadow-2xl border-4 border-indigo-500/20' />
+            )}
+            <button
+              onClick={() => {
+                setSelectedFile(null);
+                setFilePreview(null)
+              }}
+              className='absolute -top-3 -right-3 bg-red-500 cursor-pointer hover:bg-red-600 text-white rounded-xl p-2 shadow-lg transition-transform active:scale-90'>
+              <FaTimes className='h-4 w-4' />
+            </button>
+          </div>
         </div>
       )}
 
-      <div className={`p-4 ${theme === "dark" ? "bg-[#303430]" : "bg-white"} flex items-center space-x-2 relative`}>
-        <button className='focus:outline-none cursor-pointer' onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-          <FaSmile className={`h-6 w-6 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`} />
-        </button>
-        {showEmojiPicker && (
-          <div ref={emojiPickerRef} className='absolute left-0 bottom-16 z-50'>
-            <EmojiPicker
-              onEmojiClick={(emojiObject) => {
-                setMessage((prev) => prev + emojiObject.emoji)
-                setShowEmojiPicker(false)
-              }}
-              theme={theme} />
-          </div>
-        )}
-        <div className='relative'>
-          <button className='focus:outline-none' onClick={() => setShowFileMenu(!showFileMenu)}>
-            <FaPaperclip className={`h-6 w-6 ${theme === "dark" ? "text-gray-400" : "text-gray-500"} cursor-pointer mt-2`} />
-          </button>
-          {showFileMenu && (
-            <div className={`absolute bottom-full left-0 mb-2 ${theme === "dark" ? "bg-gray-700" : "bg-white"} rounded-lg shadow-lg`}>
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} accept='image/*,videos/*' className='hidden' />
-              <button onClick={() => fileInputRef.current.click()} className={`flex items-center px-4 py-2 w-full transition-colors ${theme === "dark" ? "hover:bg-gray-500" : "hover:bg-gray-100"}`}>
-                <FaImage className='mr-2' /> Image/Video
-              </button>
-              <button onClick={() => fileInputRef.current.click()} className={`flex items-center px-4 py-2 w-full transition-colors ${theme === "dark" ? "hover:bg-gray-500" : "hover:bg-gray-100"}`}>
-                <FaFile className='mr-2' /> Documents
-              </button>
+      {/* Input Area */}
+      <div className={`p-4 border-t transition-all relative ${
+        theme === "dark" ? "bg-zinc-900/90 border-zinc-800" : "bg-white border-zinc-200"
+      }`}>
+        <div className="max-w-6xl mx-auto flex items-end gap-3">
+            <div className={`flex items-center gap-1 p-1.5 rounded-[2rem] flex-grow border transition-all ${
+                theme === "dark" ? "bg-zinc-950 border-zinc-800 focus-within:border-indigo-500" : "bg-zinc-50 border-zinc-200 focus-within:border-indigo-600"
+            }`}>
+                <button className={`p-2.5 cursor-pointer rounded-full transition-colors ${theme === "dark" ? "text-zinc-400 hover:bg-zinc-800" : "text-zinc-500 hover:bg-zinc-200"}`} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                    <FaSmile className="h-6 w-6" />
+                </button>
+                
+                {showEmojiPicker && (
+                    <div ref={emojiPickerRef} className='absolute left-0 bottom-24 z-50 shadow-2xl scale-95 origin-bottom-left transition-all'>
+                        <EmojiPicker
+                            onEmojiClick={(emojiObject) => {
+                                setMessage((prev) => prev + emojiObject.emoji)
+                                setShowEmojiPicker(false)
+                            }}
+                            theme={theme} 
+                        />
+                    </div>
+                )}
+
+                <div className='relative'>
+                    <button className={`p-2.5 cursor-pointer rounded-full transition-colors ${theme === "dark" ? "text-zinc-400 hover:bg-zinc-800" : "text-zinc-500 hover:bg-zinc-200"}`} onClick={() => setShowFileMenu(!showFileMenu)}>
+                        <FaPaperclip className="h-5 w-5" />
+                    </button>
+                    {showFileMenu && (
+                        <div className={`absolute bottom-full left-0 mb-4 w-48 overflow-hidden rounded-2xl shadow-2xl border animate-in fade-in slide-in-from-bottom-2 ${
+                            theme === "dark" ? "bg-zinc-900 border-zinc-800 text-zinc-300" : "bg-white border-zinc-200 text-zinc-700"
+                        }`}>
+                            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept='image/*,videos/*' className='hidden' />
+                            <button onClick={() => fileInputRef.current.click()} className={`flex cursor-pointer items-center px-4 py-3 w-full text-sm font-bold transition-colors ${theme === "dark" ? "hover:bg-zinc-800" : "hover:bg-zinc-50"}`}>
+                                <FaImage className='mr-3 text-indigo-500' /> Photos/Videos
+                            </button>
+                            <button onClick={() => fileInputRef.current.click()} className={`flex cursor-pointer items-center px-4 py-3 w-full text-sm font-bold transition-colors ${theme === "dark" ? "hover:bg-zinc-800" : "hover:bg-zinc-50"}`}>
+                                <FaFile className='mr-3 text-indigo-500' /> Documents
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                            handleSendMessage()
+                        }
+                    }}
+                    placeholder='Message...'
+                    className="flex-grow bg-transparent px-2 py-3 outline-none font-medium text-sm" 
+                />
             </div>
-          )}
+
+            <button 
+                onClick={handleSendMessage} 
+                disabled={!message.trim() && !selectedFile}
+                className={`p-4 rounded-full transition-all active:scale-90 shadow-lg cursor-pointer ${
+                    !message.trim() && !selectedFile 
+                    ? "bg-zinc-800 text-zinc-600 cursor-not-allowed" 
+                    : theme === "dark" ? "bg-indigo-500 text-white shadow-indigo-500/20" : "bg-indigo-600 text-white shadow-indigo-600/20"
+                }`}
+            >
+                <FaPaperPlane className='h-5 w-5' />
+            </button>
         </div>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              handleSendMessage()
-            }
-          }}
-          placeholder='Type a message...'
-          className={`flex-grow px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 ${theme === "dark" ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"}`} />
-        <button onClick={handleSendMessage} className='focus:outline-none cursor-pointer'>
-          <FaPaperPlane className='h-6 w-6 text-green-500' />
-        </button>
       </div>
     </div>
   )
