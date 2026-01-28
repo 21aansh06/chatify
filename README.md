@@ -37,23 +37,34 @@ Chatify is a production-ready real-time chat application built using the MERN st
 | **Services** | Twilio (Phone), SendGrid (Email), Upstash (Cloud Redis) |
 
 ---
-### 🧪 Rate Limiting Logic
+## 🚦 Rate Limiting Strategy
 
-To maintain system stability and prevent spam, Chatify implements a high-performance rate-limiting layer using **Redis**.
+Chatify uses a **two-layer Redis-based rate limiting system** to prevent spam while keeping the chat experience smooth.
 
-* **Granular Control:** Limits are applied per user, per conversation to ensure legitimate users aren't globally blocked.
-* **Mechanism:** Uses the Redis `INCR` command to track message frequency and `EXPIRE` to reset the window.
-* **Efficiency:** By handling this in-memory (Redis) rather than hitting MongoDB, the application remains fast even under heavy traffic.
+### 1️⃣ Per User Rate Limit (Global)
+Limits how frequently a user can send messages overall.
 
-**Key Structure:**
-`msg:{userId}:{conversationId}`
+- **Purpose:** Prevents abuse, bot behavior, and accidental message floods
+- **Key:** `msg:{senderID}`
+- **Example:** Max **30 messages in 60 seconds per user**
 
-**Example Workflow:**
-1. A user sends a message.
-2. The system increments the counter for that specific `userId` + `conversationId` pair.
-3. If the counter exceeds the threshold (e.g., 7 messages in 10 seconds), the request is rejected.
-4. The key expires automatically after the defined window, allowing the user to resume chatting.
----
+### 2️⃣ Per User Per Conversation Rate Limit
+Applies stricter limits within a single conversation.
+
+- **Purpose:** Stops spamming in individual chats without blocking the user globally
+- **Key:** `msg:{senderId}:{conversationId}`
+- **Example:** Max **15 messages in 10 seconds per user per conversation**
+
+### ⚙️ Implementation
+- Built using **Redis `INCR` + `EXPIRE`**
+- Executed **before message persistence**
+- Avoids unnecessary MongoDB writes and file uploads
+
+### ✅ Benefits
+- Fine-grained abuse control
+- High performance (in-memory operations)
+- Scales efficiently for real-time messaging
+
 
 ## 👨‍💻 Author
 
