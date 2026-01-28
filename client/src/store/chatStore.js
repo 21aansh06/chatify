@@ -232,7 +232,6 @@ export const chatStore = create((set, get) => ({
         const media = formData.get("media")
         const content = formData.get("content")
         const messageStatus = formData.get("messageStatus")
-
         const socket = getSocket()
         const { conversations } = get()
         let conversationId = null
@@ -265,7 +264,7 @@ export const chatStore = create((set, get) => ({
 
         try {
             const { data } = await axiosInstance.post(
-                `/chats/send-message?recieverId=${recieverId}`,
+                "/chats/send-message",
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             )

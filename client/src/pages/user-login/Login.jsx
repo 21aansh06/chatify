@@ -249,7 +249,7 @@ const Login = () => {
       >
        
         <div className="flex flex-col items-center mb-10">
-          <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl mb-6 ${theme === "dark" ? "bg-indigo-400 text-zinc-950" : "bg-indigo-600 text-white"}`}>
+          <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl mb-6 bg-indigo-600 text-white`}>
             <LuMessageCircleCode className="w-10 h-10 " />
           </div>
           <h1 className={`text-4xl font-black italic tracking-tighter ${theme === "dark" ? "text-indigo-400" : "text-indigo-600"}`}>

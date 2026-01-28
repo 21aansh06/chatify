@@ -5,7 +5,7 @@ import { multerMiddleare } from "../config/cloudinary.js"
 import { messageRateLimit } from "../middleware/messageRateLimit.js"
 const chatRouter = express.Router()
 
-chatRouter.post("/send-message" , authMiddleware ,messageRateLimit, multerMiddleare, sendMessage)
+chatRouter.post("/send-message" , authMiddleware , multerMiddleare, messageRateLimit, sendMessage)
 chatRouter.get("/conversations" , authMiddleware , getAllConversations)
 chatRouter.get("/conversations/:conversationId/messages" , authMiddleware , getConversation)
 chatRouter.put("/messages/read" , authMiddleware , markAsRead)

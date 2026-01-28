@@ -1,14 +1,31 @@
 import { updloadFileToCloudinary } from "../config/cloudinary.js"
+import redis from "../config/redis.js";
 import Conversation from "../models/Conversation.js"
 import Message from "../models/Message.js"
 
 export const sendMessage = async (req, res) => {
     try {
+
         const { senderId, recieverId, content, messageStatus } = req.body;
         const file = req.file;
-        const participants = [senderId, recieverId].sort();
+        const participants = [senderId, recieverId].sort()
+        const key = `msg:${senderId}:${recieverId}`
+        const count = await redis.incr(key)
 
-        let conversation = await Conversation.findOne({ participants });
+        if (count === 1) {
+            await redis.expire(key, 60) 
+        }
+
+        if (count > 10) {
+            return res.status(429).json({
+                success: false,
+                message: "Too many messages.Slow down."
+            })
+        }
+
+        let conversation = await Conversation.findOne({
+            participants: { $all: participants }
+        })
         if (!conversation) {
             conversation = new Conversation({ participants });
             await conversation.save();

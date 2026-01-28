@@ -19,6 +19,7 @@ const Setting = () => {
   const handleLogout = async () => {
     try {
       await logoutUser()
+      localStorage.removeItem("auth_token")
       clearUser()
       toast.success("Logged out successfully")
     } catch (error) {

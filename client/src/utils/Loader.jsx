@@ -35,9 +35,8 @@ export default function Loader({ progress = 0 }) {
             scale: [1, 1.05, 1]
           }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className={`w-24 h-24 rounded-3xl flex items-center justify-center shadow-2xl mb-8 ${
-            theme === "dark" ? "bg-indigo-400 text-zinc-950" : "bg-indigo-600 text-white"
-          }`}
+          className={`w-24 h-24 rounded-3xl flex items-center justify-center shadow-2xl mb-8 bg-indigo-600 text-white
+          `}
         >
           <LuMessageCircleCode className="w-12 h-12 -rotate-12" />
         </motion.div>
