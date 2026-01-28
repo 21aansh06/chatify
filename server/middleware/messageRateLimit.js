@@ -1,8 +1,7 @@
-import Conversation from "../models/Conversation.js"
 import redis from "../config/redis.js";
 
 const WINDOW_SECONDS = 60
-const MAX_MESSAGES = 25
+const MAX_MESSAGES = 30
 
 export const messageRateLimit = async (req, res, next) => {
   try {

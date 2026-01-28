@@ -9,26 +9,25 @@ export const sendMessage = async (req, res) => {
         const { senderId, recieverId, content, messageStatus } = req.body;
         const file = req.file;
         const participants = [senderId, recieverId].sort()
-        const key = `msg:${senderId}:${recieverId}`
+
+
+        let conversation = await Conversation.findOne({ participants })
+        if (!conversation) {
+            conversation = new Conversation({ participants });
+            await conversation.save();
+        }
+        const key = `msg:${senderId}:${conversation._id}`
         const count = await redis.incr(key)
 
         if (count === 1) {
-            await redis.expire(key, 60) 
+            await redis.expire(key, 10)
         }
 
-        if (count > 10) {
+        if (count > 15) {
             return res.status(429).json({
                 success: false,
                 message: "Too many messages.Slow down."
             })
-        }
-
-        let conversation = await Conversation.findOne({
-            participants: { $all: participants }
-        })
-        if (!conversation) {
-            conversation = new Conversation({ participants });
-            await conversation.save();
         }
 
         let imageURL = null;
