@@ -19,8 +19,27 @@ Chatify is a production-ready real-time chat application built using the MERN st
 
 ### ⚡ Performance & Security
 * **Optimized Queries:** MongoDB indexing for fast data retrieval.
-* **Scalability:** Logic designed for scalable socket management.
+* **Scalability:** Logic designed for scalable socket management. Implemented Cursor-based pagination.
 * **Security:** Secure environment variable handling and middleware protection.
+
+### 📜 Cursor-Based Pagination
+* **Efficient message loading** using cursor-based pagination.
+* Loads messages in chunks instead of fetching entire chat history.
+* Uses MongoDB `_id` as a cursor for consistent ordering.
+
+**How it works:**
+- Messages are fetched in reverse chronological order.
+- Each request returns:
+  - `messages`
+  - `nextCursor`
+  - `hasMore`
+- Older messages are loaded when the user scrolls up.
+
+**Benefits:**
+- Faster initial load
+- Reduced database load
+- Scales well for long conversations
+
 
 ### 🖼 Media Support
 * **File Handling:** Image and file uploads via Multer.
