@@ -10,6 +10,7 @@ export const chatStore = create((set, get) => ({
     loading: false,
     loadingMore: false,
     error: null,
+    currentUser: null,
     onlineUsers: new Map(),
     typingUsers: new Map(),
 
@@ -34,7 +35,6 @@ export const chatStore = create((set, get) => ({
         })
 
         socket.on("message_status_update", ({ messageId, messageStatus }) => {
-            console.log("status", messageStatus)
             set((state) => ({
                 messages: state.messages.map((msg) =>
                     msg._id === messageId ? { ...msg, messageStatus } : msg)
@@ -54,6 +54,12 @@ export const chatStore = create((set, get) => ({
                 })
                 return { messages: updatedMessages }
             })
+        })
+
+        socket.on("message_deleted", (messageId) => {
+            set((state) => ({
+                messages: state.messages.filter((msg) => msg._id !== messageId)
+            }))
         })
 
         socket.on("message_error", (error) => {

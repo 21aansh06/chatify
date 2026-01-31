@@ -160,14 +160,34 @@ export const getConversation = async (req, res) => {
         const nextCursor =
             messages.length > 0 ? messages[messages.length - 1]._id : null
 
+        const unreadMessages = await Message.find({
+            conversation: conversationId,
+            reciever: userId,
+            messageStatus: { $in: ["sent", "delivered"] }
+        })
+
         await Message.updateMany(
-            {
-                conversation: conversationId,
-                reciever: userId,
-                messageStatus: { $in: ["send", "delivered"] }
-            },
+            { _id: { $in: unreadMessages.map(m => m._id) } },
             { $set: { messageStatus: "read" } }
         )
+
+        if (req.io && req.socketUserMap && unreadMessages.length > 0) {
+            const senderId = conversation.participants.find(
+                id => id.toString() !== userId.toString()
+            )
+
+            const senderSocketId = req.socketUserMap.get(senderId?.toString())
+
+            if (senderSocketId) {
+                unreadMessages.forEach(msg => {
+                    req.io.to(senderSocketId).emit("message_status_update", {
+                        messageId: msg._id,
+                        messageStatus: "read"
+                    })
+                })
+            }
+        }
+
 
         conversation.unreadCount = 0
         await conversation.save()
@@ -231,11 +251,21 @@ export const deleteMessage = async (req, res) => {
         }
         await message.deleteOne()
         if (req.io && req.socketUserMap) {
-            const recieverSocketId = req.socketUserMap.get(message.reciever)
-            if (recieverSocketId) {
-                req.io.to(recieverSocketId).emit("message_deleted", messageId)
+            const senderId = message.sender.toString()
+            const receiverId = message.reciever.toString()
+
+            const senderSocketId = req.socketUserMap.get(senderId)
+            const receiverSocketId = req.socketUserMap.get(receiverId)
+
+            if (senderSocketId) {
+                req.io.to(senderSocketId).emit("message_deleted", messageId)
+            }
+
+            if (receiverSocketId) {
+                req.io.to(receiverSocketId).emit("message_deleted", messageId)
             }
         }
+
         return res.json({ success: true, message: "Message deleted" })
     } catch (error) {
         return res.json({ success: false, message: error.message })

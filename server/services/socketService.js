@@ -9,20 +9,20 @@ const onlineUsers = new Map()
 const typingUsers = new Map()
 
 export const initializeSocket = (server) => {
-  const allowedOrigins = [
-    "http://localhost:5173",
-    process.env.FRONTEND_URL,
-  ].filter(Boolean);
+    const allowedOrigins = [
+        "http://localhost:5173",
+        process.env.FRONTEND_URL,
+    ].filter(Boolean);
 
-  const io = new Server(server, {
-    cors: {
-      origin: allowedOrigins,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      credentials: false,
-      allowedHeaders: ["Authorization"],
-    },
-    pingTimeout: 60 * 1000,
-  });
+    const io = new Server(server, {
+        cors: {
+            origin: allowedOrigins,
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            credentials: false,
+            allowedHeaders: ["Authorization"],
+        },
+        pingTimeout: 60 * 1000,
+    });
     io.use(socketMiddleware)
 
     io.on("connection", (socket) => {
@@ -98,6 +98,39 @@ export const initializeSocket = (server) => {
 
             }
         })
+        // messgae status
+        socket.on("mark_as_read", async ({ conversationId }) => {
+            try {
+                if (!userId) return
+
+                const unreadMessages = await Message.find({
+                    conversation: conversationId,
+                    reciever: userId,
+                    messageStatus: { $ne: "read" }
+                })
+
+                if (!unreadMessages.length) return
+
+                await Message.updateMany(
+                    { _id: { $in: unreadMessages.map(m => m._id) } },
+                    { $set: { messageStatus: "read" } }
+                )
+
+                unreadMessages.forEach(msg => {
+                    const senderSocketId = onlineUsers.get(msg.sender.toString())
+                    if (senderSocketId) {
+                        io.to(senderSocketId).emit("message_status_update", {
+                            messageId: msg._id,
+                            messageStatus: "read"
+                        })
+                    }
+                })
+
+            } catch (err) {
+                console.error("mark_as_read error:", err)
+            }
+        })
+
         //update status of messgae
         socket.on("add_reaction", async ({ messageId, emoji, userId }) => {
             try {
